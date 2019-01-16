@@ -1,0 +1,106 @@
+version: "3"
+services:
+  nginx:
+    env_file:
+      - ./containers/secrets/laravel.env
+    environment:
+      LARAVEL_SERVER_NAME: localhost
+    image: nginx:stable
+    container_name: nginx-www2
+    links:
+      - phpfpm:fpm
+    # mem_limit: 134217728b   # Available until version 2.1. On version 3.0 generates an error.
+    ports:
+      - "80:80"
+      - "5443:5443"
+    
+    volumes:
+      - .:/var/www/app
+      - ./containers/secrets:/secrets
+      - ./containers/nginx-kops/laravel-nginx:/etc/nginx/conf.d/default.conf
+      - ./containers/storage/data:/var/lib/mysql
+  
+  db:
+    image: mariadb
+    container_name: mariadb2
+    env_file: ./containers/secrets/laravel.env
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+    
+    ports:
+      - "3306:3306"  
+    volumes:
+      - ./containers/storage/data:/var/lib/mysql
+
+  phpfpm:
+    image: laravel-phpfpm:7.1
+    container_name: laravel-phpfpm2
+    # mem_limit: 134217728b   # Available until version 2.1. On version 3.0 generates an error.
+    env_file: 
+      - ./containers/secrets/laravel.env
+      - ./containers/secrets/redis.env
+
+    # To run at production environment, comment/change XDEBUG to "false"
+    environment:
+      CONTAINER_ROLE: app
+      APP_ENV: local
+      XDEBUG: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+    
+    volumes:
+      - ./containers/storage/data:/var/lib/mysql
+      - .:/var/www/app
+
+    depends_on:
+      - db
+      - redis
+  
+  artisan-queue:
+    container_name: laravel-queue2
+    image: laravel-phpfpm:7.1
+    env_file: ./containers/secrets/laravel.env
+    environment:
+      CONTAINER_ROLE: queue
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      QUEUE_DRIVER: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      LARAVEL_HORIZON: "false"
+      
+    # command: "/usr/bin/supervisord"
+    command: "/usr/bin/supervisord --nodaemon --configuration /etc/supervisor/supervisord.conf"
+    volumes:
+      - ./containers/storage/data:/var/lib/mysql
+      - .:/var/www/app
+    depends_on:
+      - db
+      - redis
+
+  artisan-scheduler:
+    container_name: laravel-scheduler2
+    image: laravel-phpfpm:7.1
+    env_file: ./containers/secrets/laravel.env
+    environment:
+      CONTAINER_ROLE: scheduler
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      QUEUE_DRIVER: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      
+    volumes:
+      - .:/var/www/app
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: redis
+    container_name: redis2
+    env_file:
+      - ./containers/secrets/redis.env
+    ports:
+      - "6379:6379"
