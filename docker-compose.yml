@@ -1,8 +1,6 @@
 version: "3"
 services:
   nginx:
-    env_file:
-      - ./containers/secrets/laravel.env
     environment:
       LARAVEL_SERVER_NAME: localhost
     image: nginx:stable
@@ -16,13 +14,10 @@ services:
     
     volumes:
       - .:/var/www/app
-      - ./containers/secrets:/secrets
-      - ./containers/storage/data:/var/lib/mysql
   
   db:
     image: mariadb
     container_name: mariadb
-    env_file: ./containers/secrets/laravel.env
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
     
@@ -35,9 +30,6 @@ services:
     image: alanoteles/laravel-phpfpm:7.1
     container_name: laravel-phpfpm
     # mem_limit: 134217728b   # Available until version 2.1. On version 3.0 generates an error.
-    env_file: 
-      - ./containers/secrets/laravel.env
-      - ./containers/secrets/redis.env
 
     # To run at production environment, comment/change XDEBUG to "false"
     environment:
@@ -58,7 +50,6 @@ services:
   artisan-queue:
     container_name: laravel-queue
     image: alanoteles/laravel-phpfpm:7.1
-    env_file: ./containers/secrets/laravel.env
     environment:
       CONTAINER_ROLE: queue
       CACHE_DRIVER: redis
@@ -79,7 +70,6 @@ services:
   artisan-scheduler:
     container_name: laravel-scheduler
     image: alanoteles/laravel-phpfpm:7.1
-    env_file: ./containers/secrets/laravel.env
     environment:
       CONTAINER_ROLE: scheduler
       CACHE_DRIVER: redis
@@ -97,7 +87,5 @@ services:
   redis:
     image: redis
     container_name: redis
-    env_file:
-      - ./containers/secrets/redis.env
     ports:
       - "6379:6379"
