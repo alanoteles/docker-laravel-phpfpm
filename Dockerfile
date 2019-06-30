@@ -28,15 +28,6 @@ RUN docker-php-ext-install zip bz2 pdo_pgsql pdo_mysql pcntl \
 && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
 && docker-php-ext-install gd
 
-# RUN usermod -u 1000 www-data
-
-# Memory Limit
-RUN echo "memory_limit=2048M" > $PHP_INI_DIR/conf.d/memory-limit.ini
-RUN echo "max_execution_time=900" >> $PHP_INI_DIR/conf.d/memory-limit.ini
-RUN echo "extension=apcu.so" > $PHP_INI_DIR/conf.d/apcu.ini
-RUN echo "post_max_size=20M" >> $PHP_INI_DIR/conf.d/memory-limit.ini
-RUN echo "upload_max_filesize=20M" >> $PHP_INI_DIR/conf.d/memory-limit.ini
-
 # Time Zone
 RUN echo "date.timezone=${PHP_TIMEZONE:-UTC}" > $PHP_INI_DIR/conf.d/date_timezone.ini
 
@@ -50,13 +41,11 @@ RUN echo "cgi.fix_pathinfo=0" > $PHP_INI_DIR/conf.d/path-info.ini
 RUN echo "expose_php=0" > $PHP_INI_DIR/conf.d/path-info.ini
 
 # Install Composer
-# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Laravel Schedule Cron Job:
 RUN echo "* * * * * root /usr/local/bin/php /var/www/app/artisan schedule:run >> /dev/null 2>&1"  >> /etc/cron.d/laravel-scheduler
 RUN chmod 0644 /etc/cron.d/laravel-scheduler
-
 
 # Aliases
 # docker-compose exec php-fpm art --> php artisan
@@ -88,6 +77,19 @@ COPY ./docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN ln -s /usr/local/bin/docker-entrypoint.sh /
 ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Add user for laravel application
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
+
+# Copy existing application directory contents
+COPY . /var/www
+
+# Copy existing application directory permissions
+COPY --chown=www:www . /var/www
+
+# Change current user to www
+USER www
 
 EXPOSE 9000
 CMD ["php-fpm"]

@@ -14,6 +14,7 @@ services:
     
     volumes:
       - .:/var/www/app
+      - ./containers/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - app-network
   
@@ -26,7 +27,8 @@ services:
     ports:
       - "3306:3306"  
     volumes:
-      - ./containers/storage/data:/var/lib/mysql
+      - ./containers/mysql/data:/var/lib/mysql
+      - ./containers/mysql/my.cnf:/etc/mysql/my.cnf
       
     networks:
       - app-network
@@ -47,6 +49,7 @@ services:
     volumes:
       - ./containers/storage/data:/var/lib/mysql
       - .:/var/www/app
+      - ./containers/php/local.ini:/usr/local/etc/php/conf.d/local.ini
 
     networks:
       - app-network
@@ -71,6 +74,7 @@ services:
     volumes:
       - ./containers/storage/data:/var/lib/mysql
       - .:/var/www/app
+      - ./containers/php/local.ini:/usr/local/etc/php/conf.d/local.ini
 
     networks:
       - app-network
@@ -92,6 +96,7 @@ services:
       
     volumes:
       - .:/var/www/app
+      - ./containers/php/local.ini:/usr/local/etc/php/conf.d/local.ini
 
     networks:
       - app-network
