@@ -78,18 +78,20 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN ln -s /usr/local/bin/docker-entrypoint.sh /
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Add user for laravel application
-RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
+# # Add user for laravel application
+# RUN groupadd -g 1000 www
+# RUN useradd -u 1000 -ms /bin/bash -g www www
 
-# Copy existing application directory contents
-COPY . /var/www
+# # Change current user to www
+# USER www
 
-# Copy existing application directory permissions
-COPY --chown=www:www . /var/www
+# # Copy existing application directory contents
+# COPY . /var/www
 
-# Change current user to www
-USER www
+# # Copy existing application directory permissions
+# COPY --chown=www:www . /var/www
+
+
 
 EXPOSE 9000
 CMD ["php-fpm"]
