@@ -14,6 +14,8 @@ services:
     
     volumes:
       - .:/var/www/app
+    networks:
+      - app-network
   
   db:
     image: mariadb
@@ -25,6 +27,9 @@ services:
       - "3306:3306"  
     volumes:
       - ./containers/storage/data:/var/lib/mysql
+      
+    networks:
+      - app-network
 
   phpfpm:
     image: alanoteles/laravel-phpfpm:7.2
@@ -42,6 +47,9 @@ services:
     volumes:
       - ./containers/storage/data:/var/lib/mysql
       - .:/var/www/app
+
+    networks:
+      - app-network
 
     depends_on:
       - db
@@ -63,6 +71,10 @@ services:
     volumes:
       - ./containers/storage/data:/var/lib/mysql
       - .:/var/www/app
+
+    networks:
+      - app-network
+
     depends_on:
       - db
       - redis
@@ -80,6 +92,10 @@ services:
       
     volumes:
       - .:/var/www/app
+
+    networks:
+      - app-network
+
     depends_on:
       - db
       - redis
@@ -89,3 +105,10 @@ services:
     # container_name: redis
     ports:
       - "6379:6379"
+
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
