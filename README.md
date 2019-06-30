@@ -9,7 +9,7 @@ The Laravel Schedule service runs under Supervisor monitoring.
 
 The queues and schedule service was configured as separated services to simplify the scaling job. You can add more replicas to the services more easily.
 
-If your project uses Redis for queues,  add this line to you `.env` file :
+If you're using Redis for queues, add this line to you `.env` file :
 
 `QUEUE_DRIVER=redis`
 
