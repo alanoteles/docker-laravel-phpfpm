@@ -33,7 +33,7 @@ services:
     networks:
       - app-network
 
-  phpfpm:
+  app:
     image: alanoteles/laravel-phpfpm:7.2
     
     # mem_limit: 134217728b   # Available until version 2.1. On version 3.0 generates an error.
