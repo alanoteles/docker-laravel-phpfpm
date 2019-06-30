@@ -6,7 +6,7 @@ services:
     image: nginx:stable
     
     links:
-      - phpfpm:fpm
+      - app
     # mem_limit: 134217728b   # Available until version 2.1. On version 3.0 generates an error.
     ports:
       - "80:80"
@@ -23,6 +23,11 @@ services:
     
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
     
     ports:
       - "3306:3306"  
