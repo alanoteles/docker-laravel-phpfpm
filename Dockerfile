@@ -1,4 +1,4 @@
-FROM php:7.1-fpm
+FROM php:7.2-fpm
 
 # Update packages and install composer and PHP dependencies.
 RUN apt-get update && \
@@ -17,13 +17,14 @@ RUN apt-get update && \
     && pecl channel-update pecl.php.net \
     && pecl install apcu \
     && pecl install xdebug \
-    && docker-php-ext-enable xdebug
+    && pecl install mcrypt-1.0.1 \
+    && docker-php-ext-enable xdebug mcrypt
 
 # 
 COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # PHP Extensions
-RUN docker-php-ext-install mcrypt zip bz2 pdo_pgsql pdo_mysql pcntl \
+RUN docker-php-ext-install zip bz2 pdo_pgsql pdo_mysql pcntl \
 && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
 && docker-php-ext-install gd
 

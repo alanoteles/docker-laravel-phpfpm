@@ -4,7 +4,7 @@ services:
     environment:
       LARAVEL_SERVER_NAME: localhost
     image: nginx:stable
-    container_name: nginx-www
+    # container_name: nginx-www
     links:
       - phpfpm:fpm
     # mem_limit: 134217728b   # Available until version 2.1. On version 3.0 generates an error.
@@ -17,7 +17,7 @@ services:
   
   db:
     image: mariadb
-    container_name: mariadb
+    # container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
     
@@ -27,8 +27,8 @@ services:
       - ./containers/storage/data:/var/lib/mysql
 
   phpfpm:
-    image: alanoteles/laravel-phpfpm:7.1
-    container_name: laravel-phpfpm
+    image: alanoteles/laravel-phpfpm:7.2
+    # container_name: laravel-phpfpm
     # mem_limit: 134217728b   # Available until version 2.1. On version 3.0 generates an error.
 
     # To run at production environment, comment/change XDEBUG to "false"
@@ -48,8 +48,8 @@ services:
       - redis
   
   artisan-queue:
-    container_name: laravel-queue
-    image: alanoteles/laravel-phpfpm:7.1
+    # container_name: laravel-queue
+    image: alanoteles/laravel-phpfpm:7.2
     environment:
       CONTAINER_ROLE: queue
       CACHE_DRIVER: redis
@@ -68,8 +68,8 @@ services:
       - redis
 
   artisan-scheduler:
-    container_name: laravel-scheduler
-    image: alanoteles/laravel-phpfpm:7.1
+    # container_name: laravel-scheduler
+    image: alanoteles/laravel-phpfpm:7.2
     environment:
       CONTAINER_ROLE: scheduler
       CACHE_DRIVER: redis
@@ -86,6 +86,6 @@ services:
 
   redis:
     image: redis
-    container_name: redis
+    # container_name: redis
     ports:
       - "6379:6379"
