@@ -52,7 +52,7 @@ services:
       REDIS_PORT: 6379
       
     volumes:
-      - ./containers/storage/data:/var/lib/mysql
+      - ./containers/mysql/data:/var/lib/mysql
       - .:/var/www/app
       - ./containers/php/local.ini:/usr/local/etc/php/conf.d/local.ini
 
@@ -77,7 +77,7 @@ services:
       
     command: "/usr/bin/supervisord --nodaemon --configuration /etc/supervisor/supervisord.conf"
     volumes:
-      - ./containers/storage/data:/var/lib/mysql
+      - ./containers/mysql/data:/var/lib/mysql
       - .:/var/www/app
       - ./containers/php/local.ini:/usr/local/etc/php/conf.d/local.ini
 
@@ -101,6 +101,7 @@ services:
       
     volumes:
       - .:/var/www/app
+      - ./containers/mysql/data:/var/lib/mysql
       - ./containers/php/local.ini:/usr/local/etc/php/conf.d/local.ini
 
     networks:
