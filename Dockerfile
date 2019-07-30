@@ -12,6 +12,7 @@ RUN apt-get update && \
     libmcrypt-dev \
     libpng-dev \
     libbz2-dev \
+	unzip \
     cron \
     supervisor \
     && pecl channel-update pecl.php.net \
