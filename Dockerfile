@@ -1,4 +1,4 @@
-FROM php:7.2-fpm
+FROM php:7.4-fpm
 
 # Update packages and install composer and PHP dependencies.
 RUN apt-get update && \
@@ -12,13 +12,15 @@ RUN apt-get update && \
     libmcrypt-dev \
     libpng-dev \
     libbz2-dev \
+    libzip-dev \
+    zip \
 	unzip \
     cron \
     supervisor \
     && pecl channel-update pecl.php.net \
     && pecl install apcu \
     && pecl install xdebug \
-    && pecl install mcrypt-1.0.1 \
+    && pecl install mcrypt-1.0.3 \
     && docker-php-ext-enable xdebug mcrypt
 
 # 
@@ -26,7 +28,7 @@ COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # PHP Extensions
 RUN docker-php-ext-install zip bz2 pdo_pgsql pdo_mysql pcntl \
-&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+&& docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
 && docker-php-ext-install gd
 
 # Time Zone
@@ -84,14 +86,13 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 # RUN useradd -u 1000 -ms /bin/bash -g www www
 
 # # Change current user to www
-# USER www
+USER www-data
 
 # # Copy existing application directory contents
 # COPY . /var/www
 
 # # Copy existing application directory permissions
-# COPY --chown=www:www . /var/www
-
+COPY --chown=www-data:www-data . .
 
 
 EXPOSE 9000
